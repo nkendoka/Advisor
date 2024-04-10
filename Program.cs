@@ -1,10 +1,16 @@
+using AdvisorManagement.Infrastructure.Persistence;
 using AdvisorManagement.Model;
-using AdvisorManager.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("AdvisorsList"));
+
+builder.Services.AddSingleton<MRUCache<int, Advisor>>(new MRUCache<int, Advisor>(capacity: 5));
+
+builder.Services.AddScoped<IAdvisorRepository, AdvisorRepository>();
+
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
@@ -36,7 +42,6 @@ app.MapPut("/advisors/{id}", async (int id, Advisor inputadvisor, AppDbContext d
     advisor.Name = inputadvisor.Name;
     advisor.Address = inputadvisor.Address;
     advisor.PhoneNumber= inputadvisor.PhoneNumber;
-    advisor.HealthStatus = AdvisorService.GetColor();
 
     await db.SaveChangesAsync();
 

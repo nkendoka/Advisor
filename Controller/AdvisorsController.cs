@@ -1,6 +1,6 @@
 ﻿
+using AdvisorManagement.Infrastructure.Persistence;
 using AdvisorManagement.Model;
-using AdvisorManager.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -10,21 +10,17 @@ namespace AdvisorManagement.Web.Controllers
     [ApiController]
     public class AdvisorsController : ControllerBase
     {
-        private readonly AdvisorService _advisorService;
+        private readonly IAdvisorRepository _advisorRepository;
 
-        public AdvisorsController(AdvisorService advisorService)
+        public AdvisorsController(IAdvisorRepository advisorRepository)
         {
-            _advisorService = advisorService;
+            _advisorRepository = advisorRepository;
         }
-        public AdvisorService Get_advisorService()
-        {
-            return _advisorService;
-        }
-
+        
         [HttpPost]
         public async Task<IActionResult> CreateAdvisor(Advisor advisor)
         {
-            await _advisorService.AddAdvisorAsync(advisor);
+            await _advisorRepository.AddAsync(advisor);
             return Ok(advisor);
         }
 
@@ -38,14 +34,14 @@ namespace AdvisorManagement.Web.Controllers
                     return BadRequest("Advisor ID mismatch");
                 }
 
-                var advisorToUpdate = _advisorService.GetAdvisor(advisorId);
+                var advisorToUpdate = await _advisorRepository.GetAsync(advisorId);
 
                 if (advisorToUpdate == null)
                 {
                     return NotFound($"Advisor with Id = {advisorId} not found");
                 }
 
-                return Ok(_advisorService.UpdateAdvisorAsync(advisor));
+                return Ok(_advisorRepository.UpdateAsync(advisor));
             }
             catch (Exception)
             {
@@ -57,22 +53,22 @@ namespace AdvisorManagement.Web.Controllers
         [HttpGet("{advisorId:int}")]
         public ActionResult<Advisor> GetAdvisor(int advisorId)
         {
-            return Ok(_advisorService.GetAdvisor(advisorId));
+            return Ok(_advisorRepository.GetAsync(advisorId));
         }               
 
         [HttpDelete("{advisorId:int}")]
-        public async Task<ActionResult<Advisor>> DeleteAdvisor(int advisorId)
+        public async Task<ActionResult> DeleteAdvisor(int advisorId)
         {
             try
             {
-                var advisorToDelete = _advisorService.GetAdvisor(advisorId);
+                var advisorToDelete = await _advisorRepository.GetAsync(advisorId);
 
                 if (advisorToDelete == null)
                 {
                     return NotFound($"Advisor with Id = {advisorId} not found");
                 }
 
-                await _advisorService.DeleteAdvisorAsync(advisorToDelete);
+                await _advisorRepository.DeleteAsync(advisorId);
                 return Ok(advisorToDelete);
             }
             catch (Exception)
