@@ -19,6 +19,21 @@ namespace AdvisorManager.Services
             await _repository.AddAsync(advisor);
         }
 
+        public async Task UpdateAdvisorAsync(Advisor advisor)
+        {
+            await _repository.UpdateAsync(advisor);
+        }
+        
+        public async Task DeleteAdvisorAsync(Advisor advisor)
+        {
+            await _repository.DeleteAsync(advisor);
+        }
+
+        public Advisor GetAdvisor(int advisorId)
+        {
+            return _repository.GetAsync(advisorId);
+        }
+
         public static string GetColor()
         {
             var hColors = new Dictionary<int, string>() { { 60, "Green" }, { 80, "Yellow" }, { 100, "Green" } };

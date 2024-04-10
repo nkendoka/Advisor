@@ -14,7 +14,6 @@ namespace AdvisorManagement.Infrastructure.Persistence
         {
             _context = context;
             MRUCache<int, string> cache = new MRUCache<int, string>(5);
-
         }
 
         public async Task AddAsync(Advisor advisor)
@@ -23,12 +22,29 @@ namespace AdvisorManagement.Infrastructure.Persistence
             await _context.SaveChangesAsync();
         }
 
-        // Other CRUD operations can be implemented here
+        public async Task UpdateAsync(Advisor advisor)
+        {
+            _context.Advisors.Update(advisor);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(Advisor advisor)
+        {
+            _context.Advisors.Remove(advisor);
+            await _context.SaveChangesAsync();
+        }
+
+        public Advisor GetAsync(int advisorId)
+        {
+            return _context.Advisors.FirstOrDefault(x => x.Id == advisorId);
+        }
     }
 
     public interface IAdvisorRepository
     {
         Task AddAsync(Advisor advisor);
-        // Other CRUD methods
+        Task UpdateAsync(Advisor advisor);
+        Task DeleteAsync(Advisor advisor);
+        Advisor GetAsync(int advisorId);        
     }
 }

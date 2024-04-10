@@ -15,7 +15,7 @@ public class MRUCache<TKey, TValue>
         _accessOrder = new LinkedList<TKey>();
     }
 
-    public TValue Get(TKey key)
+    public TValue? TryGet(TKey key)
     {
         if (_cache.ContainsKey(key))
         {
@@ -25,7 +25,7 @@ public class MRUCache<TKey, TValue>
         }
         else
         {
-            throw new KeyNotFoundException("Key not found in cache.");
+            return default(TValue);
         }
     }
 
