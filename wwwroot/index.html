@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advisor Management</title>
+</head>
+<body>
+    <h1>Advisor Management</h1>
+
+    <h2>Add New Advisor</h2>
+    <form id="addForm">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br>
+        <label for="address">Address:</label><br>
+        <input type="text" id="address" name="address" required><br>
+        <label for="phoneNumber">Phone Number:</label><br>
+        <input type="text" id="phoneNumber" name="phoneNumber" required><br><br>
+        <button type="submit">Add Advisor</button>
+    </form>
+
+    <h2>Advisors</h2>
+    <ul id="advisorList"></ul>
+
+    <script>
+        // Function to fetch advisors and display them
+        async function fetchAdvisors() {
+            const response = await fetch('/api/advisors');
+            const advisors = await response.json();
+            const advisorList = document.getElementById('advisorList');
+            advisorList.innerHTML = '';
+            advisors.forEach(advisor => {
+                const li = document.createElement('li');
+                li.textContent = `Name: ${advisor.name}, Address: ${advisor.address}, Phone Number: ${advisor.phoneNumber}, Health Status: ${advisor.healthStatus}`;
+                advisorList.appendChild(li);
+            });
+        }
+
+        async function addAdvisor(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const advisorData = {};
+            formData.forEach((value, key) => {
+                advisorData[key] = value;
+            });
+
+            try {
+                const response = await fetch('/api/Advisors', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(advisorData)
+                });
+
+                if (response.ok) {
+                    form.reset();
+                    fetchAdvisors();
+                } else {
+                    console.error('Failed to add advisor');
+                }
+            } catch (error) {
+                console.error('Error adding advisor:', error);
+            }
+        }
+
+        document.getElementById('addForm').addEventListener('submit', addAdvisor);
+
+        // Fetch advisors when the page loads
+        fetchAdvisors();
+    </script>
+</body>
+</html>

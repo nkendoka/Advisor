@@ -57,6 +57,11 @@ namespace AdvisorManagement.Infrastructure.Persistence
             return advisor;
         }
 
+        public List<Advisor> GetAll()
+        {
+            return _context.Advisors.ToList();         
+        }
+
         public static string GetColor()
         {
             var hColors = new Dictionary<int, string>() { { 60, "Green" }, { 80, "Yellow" }, { 100, "Green" } };
@@ -76,6 +81,7 @@ namespace AdvisorManagement.Infrastructure.Persistence
         Task UpdateAsync(Advisor advisor);
         Task DeleteAsync(int advisorId);
         Task<Advisor> GetAsync(int advisorId);
+        List<Advisor> GetAll();
 
     }
 }

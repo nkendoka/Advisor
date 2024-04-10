@@ -16,12 +16,12 @@ namespace AdvisorManagement.Web.Controllers
         {
             _advisorRepository = advisorRepository;
         }
-        
-        [HttpPost]
-        public async Task<IActionResult> CreateAdvisor(Advisor advisor)
+
+        [HttpPost("advisors")]
+        public async Task<ActionResult<Advisor>> CreateAdvisor(Advisor advisor)
         {
             await _advisorRepository.AddAsync(advisor);
-            return Ok(advisor);
+            return CreatedAtAction(nameof(GetAdvisor), new { id = advisor.Id }, advisor);
         }
 
         [HttpPut("{id:int}")]
@@ -48,6 +48,12 @@ namespace AdvisorManagement.Web.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "Error updating data");
             }
+        }
+
+        [HttpGet]
+        public ActionResult<Advisor> Get()
+        {
+            return Ok(_advisorRepository.GetAll());
         }
 
         [HttpGet("{advisorId:int}")]
